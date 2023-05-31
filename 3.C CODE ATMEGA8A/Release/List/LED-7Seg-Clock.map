@@ -1,0 +1,97 @@
+RAM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+segmentPinState                                                                   0x0160       4
+disabeHomeTempState                                                               0x0164       1
+seqNumber                                                                         0x0165       1
+counterBlinkNumber                                                                0x0166       1
+blinkNumberChageState                                                             0x0167       1
+portEnable                                                                        0x0168       5
+brightnessSet                                                                     0x016D       1
+muteState                                                                         0x016E       1
+ym                                                                                0x016F       1
+mm                                                                                0x0170       1
+dm                                                                                0x0171       1
+w                                                                                 0x0172       1
+tempSecondBip                                                                     0x0173       1
+ys                                                                                0x0174       2
+ms                                                                                0x0176       2
+ds                                                                                0x0178       2
+counterSecondTime                                                                 0x017A       2
+
+EEPROM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+alMinute                                                                          0x0000       1
+alHour                                                                            0x0001       1
+brightnessMem                                                                     0x0002       1
+alarmSet                                                                          0x0003       1
+muteState1                                                                        0x0004       1
+
+Register Allocation
+Variable                                                                          Register  Size
+------------------------------------------------------------------------------------------------
+positionNumber                                                                    R5           1
+h                                                                                 R4           1
+m                                                                                 R7           1
+s                                                                                 R6           1
+left                                                                              R9           1
+right                                                                             R8           1
+timedisabeHomeTemp                                                                R11          1
+runnigState                                                                       R10          1
+menuPosition                                                                      R13          1
+clickState                                                                        R12          1
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+dotBlink                                                                          0x0005F     18
+m2s                                                                               0x00071    189
+buzzer                                                                            0x0012E     17
+changePositionNumber                                                              0x0013F     21
+digitalWritePortC                                                                 0x00154     33
+digitalWritePort                                                                  0x00175    148
+showString                                                                        0x00209     56
+blinkNumber                                                                       0x00241     38
+resetClickState                                                                   0x00267      2
+setClickState                                                                     0x00269      3
+resetVolume                                                                       0x0026C      3
+resetCounterSecondTime                                                            0x0026F      6
+volumeCheck                                                                       0x00275     49
+fastEditBrightness                                                                0x002A6     43
+backToHome                                                                        0x002D1      7
+checkTimeDisabeHomeTemp                                                           0x002D8     15
+checkVolumeRight                                                                  0x002E7      4
+checkVolumeLeft                                                                   0x002EB     15
+ext_int0_isr                                                                      0x002FA     12
+ext_int1_isr                                                                      0x00306     12
+timer1_ovf_isr                                                                    0x00312      8
+timer2_ovf_isr                                                                    0x0031A      3
+timer2_comp_isr                                                                   0x0031D     17
+brightness                                                                        0x0032E     28
+blinkNumberChangeTimer                                                            0x0034A     40
+blinkEditNumber                                                                   0x00372     22
+showClock                                                                         0x00388     72
+showDate                                                                          0x003D0     39
+playAlarm                                                                         0x003F7     26
+exitMenu                                                                          0x00411      7
+showStringReady                                                                   0x00418    136
+setTimeMenu                                                                       0x004BD     51
+setDateMenu                                                                       0x004F0    118
+setAlarmMenu                                                                      0x00566    107
+setMuteMenu                                                                       0x005D1     37
+fastEditBrightnessMenu                                                            0x005F6     10
+showMenu                                                                          0x00600     99
+main                                                                              0x00663     42
+startTimers                                                                       0x0068D     11
+stopCounterTimer                                                                  0x006A0     13
+startIntrupts                                                                     0x006AD      8
+portConfig                                                                        0x006B5     13
+rtc_write                                                                         0x006C2      7
+rtc_init                                                                          0x006C9     21
+rtc_get_time                                                                      0x006DE     15
+rtc_set_time                                                                      0x006ED      9
+rtc_get_date                                                                      0x006F6     17
+rtc_set_date                                                                      0x00707     10
+bcd2bin                                                                           0x00711     13
+bin2bcd                                                                           0x0071E     10

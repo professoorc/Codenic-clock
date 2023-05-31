@@ -1,0 +1,626 @@
+#include <mega8.h>
+#include <delay.h>
+#include <i2c.h>
+#include <ds1307.h>
+#include <stdio.h>
+eeprom unsigned char alMinute,alHour,brightnessMem,alarmSet;
+enum commandType
+{
+	HOME ,
+	MENU ,
+    SETTIME ,
+    SETALARM ,
+    EXIT,
+    BRIGHTNESS,
+    ALARM
+};
+ 
+unsigned char brightnessPercent=99,positionNumber=1,n[4],temp[2],i=50,h=0,m=0,s=0,left=0,right=0,clock=1,timeStopClock=0,runnigState=HOME,menuPosition=SETTIME,click=0,stopClockState=0,seqNumber=0;
+unsigned char counterBlinkNumber=0,blinkNumberChageState=0,portEnable[5]={1,1,1,1,1},brightnessSet=99;
+int z=0;
+
+void brightness(unsigned char timeBR);
+void portConfig();
+void stopIntrupts();
+void startIntrupts();
+void startTimers();
+void stopTimers() ;
+void stopClock(unsigned char timeStop);
+void startCounterTimer();
+void stopCounterTimer();
+void showBrightness();
+void brightnessCheck();
+void blinkNumberChangeTimer();
+void digitalWritePortC (unsigned char portNumber);
+
+void buzzer(unsigned int timeBuzz){
+PORTD.1=1;
+delay_ms(timeBuzz);
+PORTD.1=0;
+}
+
+void changePositionNumber(unsigned char position){
+PORTC=PORTC&0xf0;
+ switch (position) {
+    case 1 :
+    digitalWritePortC(1);
+    break;
+    case 2 :
+    digitalWritePortC(2);
+    break;
+    case 3 :
+    digitalWritePortC(3);
+    break;
+    case 4 :
+    digitalWritePortC(4);
+    break;           
+    };  
+} 
+
+void digitalWritePortC (unsigned char portNumber){
+     switch (portNumber) {
+    case 1 :
+    if(portEnable[1])PORTC.0=1;
+    break;
+    case 2 :
+    if(portEnable[2])PORTC.1=1;
+    break;
+    case 3 :
+    if(portEnable[3])PORTC.2=1;
+    break;
+    case 4 :
+    if(portEnable[4])PORTC.3=1;
+    break;           
+    };
+}
+
+unsigned char digitalWritePort ( unsigned char input){
+ switch (input) { 
+    case 1:   
+    return 6 ;
+    case 2:   
+    return 91 ;
+    case 3:   
+    return 79 ;      
+    case 4:   
+    return 102 ;    
+    case 5:   
+    return 109 ;    
+    case 6:   
+    return 125 ;    
+    case 7:   
+    return 7 ;    
+    case 8:   
+    return 127 ;    
+    case 9:   
+    return 111 ;    
+    case 0:   
+    return 63 ; 
+    case 'e':
+    return 121 ;
+    case 'r':
+    return 112 ; 
+    case 'b':
+    return 124 ; 
+    case 'p':
+    return 115 ; 
+    case 'o':
+    return 92 ;
+    case 'f':
+    return 113 ; 
+    case 'l':
+    return 56 ; 
+    case 'c':
+    return 88 ;
+    case 't':
+    return 120 ;  
+    case 'x':
+    return 118 ; 
+    case 'a':
+    return 119 ;
+    case 'i':
+    return 48 ; 
+    case 'n':
+    return 116 ;    
+    case 'v':
+    return 62 ;
+    case '.':
+    return 0 ;          
+    }; 
+}
+
+void showTwoNumber(unsigned char input,unsigned char nu)
+{
+    switch (nu) {
+    case 1 :
+    n[nu-1]= digitalWritePort(input/10);
+    n[nu]= digitalWritePort(input%10); 
+    break;
+    case 2 :
+    n[nu]= digitalWritePort(input/10);
+    n[nu+1]= digitalWritePort(input%10); 
+    break;    
+    }; 
+}
+
+void showOneNumber(unsigned char input,char nu)
+{
+  n[nu-1]= digitalWritePort(input); 
+}
+
+void blinkNumber(){    
+    switch (positionNumber) {
+    case 1 : 
+    PORTB=n[0];
+    changePositionNumber(positionNumber);
+    positionNumber=2;   
+    break;
+    case 2 : 
+    PORTB=n[1];
+    changePositionNumber(positionNumber);
+    positionNumber=3; 
+    break;
+    case 3 :
+    PORTB=n[2]; 
+    changePositionNumber(positionNumber); 
+    positionNumber=4; 
+    break;
+    case 4 :
+    PORTB=n[3]; 
+    changePositionNumber(positionNumber);  
+    positionNumber=1; 
+    break;              
+    }; 
+}
+
+void clickCheck(){
+            if(!PIND.0){
+            while(!PIND.0);
+            buzzer(100);
+            click=1;
+            if(runnigState==HOME){
+                runnigState=MENU;
+                click=0;
+            }
+             }                       
+}
+
+void brightnessCheck(){
+               if(right==2){
+               buzzer(3);
+               if(brightnessSet>1)brightnessSet--;
+               if(brightnessSet>1)brightnessSet--;
+               if(brightnessSet>1)brightnessSet--;
+               if(brightnessSet>1)brightnessSet--;
+               if(brightnessSet>1)brightnessSet--;
+               brightness(brightnessSet); 
+               showBrightness();
+               left=0;right=0;
+              } 
+              if(left==2){
+               buzzer(3);
+               if(brightnessSet<99)brightnessSet++;
+               if(brightnessSet<99)brightnessSet++;
+               if(brightnessSet<99)brightnessSet++;
+               if(brightnessSet<99)brightnessSet++;
+               if(brightnessSet<99)brightnessSet++;
+               brightness(brightnessSet);
+               showBrightness();
+               left=0;right=0;
+              }               
+}
+
+void showBrightness(){
+               stopClock(5); 
+               showTwoNumber(brightnessSet,2); 
+               showOneNumber('b',1);
+               showOneNumber('r',2);
+}
+void stopClock(unsigned char timeStop){
+ clock=0;
+ timeStopClock = timeStop;
+ startCounterTimer();
+ stopClockState=1;
+}
+
+void checkTimeForClock(){
+if(stopClockState){
+  if(timeStopClock>0){
+   timeStopClock-- ;
+   }else{
+   clock=1;
+   stopCounterTimer();
+   stopClockState=0;
+   }
+}
+}
+unsigned char right1(){
+    if(left==2){
+        right=0;left=0;
+        return 1;
+    }else{
+        return 0;
+    }
+}
+unsigned char left1(){
+    if(right==2){
+        right=0;left=0;
+        return 1;
+    }else{
+        return 0;
+    }
+}
+interrupt [EXT_INT0] void ext_int0_isr(void)
+{   
+    switch (left) {
+    case 0 : 
+    right=1;
+    break; 
+    case 1 : 
+    right=2;
+    break;
+    }; 
+}
+
+interrupt [EXT_INT1] void ext_int1_isr(void)
+{
+    switch (right) {
+    case 0 : 
+    left=1;
+    break; 
+    case 1 : 
+    left=2;
+    break;
+    };   
+}
+
+interrupt [TIM1_OVF] void timer1_ovf_isr(void)
+{
+checkTimeForClock();
+blinkNumberChangeTimer();
+TCNT1H=0x9E58 >> 8;
+TCNT1L=0x9E58 & 0xff;
+}
+
+interrupt [TIM2_OVF] void timer2_ovf_isr(void)
+{
+    blinkNumber();
+}
+
+interrupt [TIM2_COMP] void timer2_comp_isr(void)
+{     
+    changePositionNumber(0);   
+}
+
+void brightness(unsigned char timeBR){
+    unsigned char temp=0;
+    OCR2=0;
+    timeBR=(timeBR*255)/100  ;
+    for(temp=0;temp<timeBR;temp++){
+        if(OCR2<255){
+         OCR2= OCR2+1;
+        }}   
+}
+
+void blinkNumberChangeTimer(){
+    if(blinkNumberChageState){
+    if(counterBlinkNumber<1){
+    counterBlinkNumber++;
+    switch (seqNumber)
+    {
+    case 1:
+        portEnable[1]=0; portEnable[2]=0; 
+        break;
+    case 2 :
+        portEnable[3]=0; portEnable[4]=0;  
+    break;
+    }
+    } else{if(counterBlinkNumber<4){
+        counterBlinkNumber++;
+    switch (seqNumber)
+    {
+    case 1:
+        portEnable[1]=1; portEnable[2]=1;
+        break;
+    case 2 :
+        portEnable[3]=1; portEnable[4]=1;  
+    break;
+    }
+    }else{counterBlinkNumber=0;}}}
+}
+
+void blinkEditNumber(unsigned char seqNu){
+    if(blinkNumberChageState){
+        stopCounterTimer();        
+        blinkNumberChageState=0;
+        portEnable[1]=1; portEnable[2]=1; 
+        portEnable[3]=1; portEnable[4]=1;  
+    }
+    if(seqNu>0){
+    seqNumber = seqNu ;
+    startCounterTimer();
+    blinkNumberChageState=1;
+        }
+    }
+
+void showClock(){
+    rtc_get_time(&h,&m,&s); 
+    if(alarmSet==1|alarmSet==2){
+        if(alHour==h & alMinute==m ){
+        runnigState=ALARM;
+        if(alarmSet==1)alarmSet=0;
+        }}
+  if(clock){                       
+    showTwoNumber(h,1);
+    showTwoNumber(m,2);
+    }
+}
+void playAlarm(){
+    showTwoNumber(alHour,1);
+    showTwoNumber(alMinute,2);
+    runnigState = HOME;
+    stopClock(100);
+    buzzer(1000);
+}
+void exitMenu(){
+        runnigState=HOME;
+        menuPosition = SETTIME;
+        click=0;
+      blinkEditNumber(0);
+}
+void showStringClock(){
+       showOneNumber('c',1);
+       showOneNumber('l',2);
+       showOneNumber('o',3);
+       showOneNumber('c',4);
+}
+void showStringExit(){
+       showOneNumber('e',1);
+       showOneNumber('x',2);
+       showOneNumber('i',3);
+       showOneNumber('t',4);   
+}
+void showStringAlarm(){
+       showOneNumber('a',1);
+       showOneNumber('l',2);
+       showOneNumber('a',3);
+       showOneNumber('r',4); 
+}
+void showStringBrightness(){
+       showOneNumber('b',1);
+       showOneNumber('r',2);
+       showOneNumber('i',3);
+       showOneNumber(9,4); 
+}
+void showStringOne(){
+    showOneNumber('o',2);
+    showOneNumber('n',3);
+    showOneNumber('e',4); 
+}
+void showStringOff(){
+    showOneNumber('.',1);
+    showOneNumber('o',2);
+    showOneNumber('f',3);
+    showOneNumber('f',4);
+}
+void showStringEvery(){
+    showOneNumber('e',1);
+    showOneNumber('v',2);
+    showOneNumber('e',3);
+    showOneNumber('r',4);
+}
+void setBrightnessMenu(){
+    click=0;
+    blinkEditNumber(2); 
+        while (click==0 & runnigState==MENU)
+    {   
+        clickCheck();
+        if(right1()){if(brightnessSet<99)brightnessSet++;}
+        if(left1()){if(brightnessSet>1)brightnessSet--;}             
+        showTwoNumber(brightnessSet,2);  
+    }
+    brightness(brightnessSet);
+    brightnessMem=brightnessSet;
+    exitMenu();
+}
+void setTimeMenu(){
+    unsigned char hour=h,minute=m;
+        click=0;
+        showTwoNumber(h,1);
+        showTwoNumber(m,2);
+        blinkEditNumber(1);
+    while (click==0 & runnigState==MENU)
+    {   
+        clickCheck();
+        if(right1()){if(hour<24)hour++;}
+        if(left1()){if(hour>0)hour--;}             
+        showTwoNumber(hour,1);   
+    }
+    click=0;
+    blinkEditNumber(2);
+    while (click==0 & runnigState==MENU)
+    {   
+        clickCheck();
+        if(right1()){if(minute<59)minute++;}
+        if(left1()){if(minute>0)minute--;}             
+        showTwoNumber(minute,2);   
+    } 
+    rtc_set_time(hour,minute,0); 
+    exitMenu();
+}
+void setAlarmMenu(){
+   unsigned char alHour1=0,alMinute1=0;
+   alHour1=h;alMinute1=m;
+    click=0;
+    alarmSet=0;
+    while (click==0 & runnigState==MENU)
+    {   switch (alarmSet)
+         {
+        case 0:
+        showStringOff();
+        if(right1()){alarmSet=1;}
+        if(left1()){alarmSet=2;} 
+        break;
+        case 1:
+        showStringOne();
+        if(right1()){alarmSet=2;}
+        if(left1()){alarmSet=0;} 
+        break;
+        case 2:
+        showStringEvery();
+        if(right1()){alarmSet=0;}
+        if(left1()){alarmSet=1;} 
+        break;
+        }
+        clickCheck();   
+    }
+        click=0;
+        showTwoNumber(h,1);
+        showTwoNumber(m,2);
+        blinkEditNumber(1);
+    while (click==0 & runnigState==MENU)
+    {   
+        clickCheck();
+        if(right1()){if(alHour1<24)alHour1++;}
+        if(left1()){if(alHour1>0)alHour1--;}             
+        showTwoNumber(alHour1,1);   
+    }
+    click=0;
+    blinkEditNumber(2);
+    while (click==0 & runnigState==MENU)
+    {   
+        clickCheck();
+        if(right1()){if(alMinute1<59)alMinute1++;}
+        if(left1()){if(alMinute1>0)alMinute1--;}             
+        showTwoNumber(alMinute1,2);   
+    } 
+    alHour=alHour1;alMinute=alMinute1;
+    exitMenu();    
+}
+void showMenu(){
+    switch (menuPosition)
+    {
+    case SETTIME:
+        showStringClock();
+        if(click)setTimeMenu();
+        if(right1())menuPosition=SETALARM;         
+        if(left1())menuPosition=EXIT;
+        break;
+    case SETALARM:
+        showStringAlarm();
+        if(click)setAlarmMenu();
+        if(right1())menuPosition=BRIGHTNESS;       
+        if(left1())menuPosition=SETTIME;
+        break;
+    case BRIGHTNESS:
+        showStringBrightness();
+        if(click)setBrightnessMenu();
+        if(right1())menuPosition=EXIT;       
+        if(left1())menuPosition=SETALARM;
+        break;
+    case EXIT:
+        showStringExit();
+        if(click)exitMenu();
+        if(right1())menuPosition=SETTIME;
+        if(left1())menuPosition=SETALARM;
+        break;
+    }
+}
+void main(void)
+{
+
+portConfig();
+startTimers();
+startIntrupts(); 
+
+#asm("sei")
+
+i2c_init();
+rtc_init(0,0,0);
+brightness(brightnessMem);
+//buzzer(500);
+brightnessSet=brightnessMem;
+
+while (1)
+      {     
+            clickCheck();
+            switch (runnigState)
+            {
+            case HOME:
+            brightnessCheck();
+            showClock(); 
+            break;
+            case MENU:
+            showMenu();
+            break;
+            case ALARM:
+            playAlarm();
+            break;
+            }   
+      }
+}
+
+
+
+
+void stopTimers(){
+ASSR=0<<AS2;
+TCCR2=(0<<PWM2) | (0<<COM21) | (0<<COM20) | (0<<CTC2) | (0<<CS22) | (0<<CS21) | (0<<CS20);
+TCNT2=0x00;
+TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1) | (0<<TOIE0);
+}
+
+void startTimers(){
+ASSR=0<<AS2;
+TCCR2=(0<<PWM2) | (0<<COM21) | (0<<COM20) | (0<<CTC2) | (0<<CS22) | (1<<CS21) | (1<<CS20);
+TCNT2=0x00;
+OCR2=0xff;
+TIMSK=(1<<OCIE2) | (1<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (1<<TOIE1) | (0<<TOIE0);
+}
+
+void startCounterTimer(){
+TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (0<<CS12) | (1<<CS11) | (1<<CS10);
+TCNT1H=0x9E;
+TCNT1L=0x58;
+ICR1H=0x00;
+ICR1L=0x00;
+OCR1AH=0x00;
+OCR1AL=0x00;
+OCR1BH=0x00;
+OCR1BL=0x00;
+}
+
+void stopCounterTimer(){
+TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (0<<CS12) | (0<<CS11) | (0<<CS10);
+TCNT1H=0x00;
+TCNT1L=0x00;
+ICR1H=0x00;
+ICR1L=0x00;
+OCR1AH=0x00;
+OCR1AL=0x00;
+OCR1BH=0x00;
+OCR1BL=0x00;
+}
+
+void startIntrupts(){
+GICR|=(1<<INT1) | (1<<INT0);
+MCUCR=(1<<ISC11) | (0<<ISC10) | (1<<ISC01) | (0<<ISC00);
+GIFR=(1<<INTF1) | (1<<INTF0);
+}
+
+void stopIntrupts(){
+ GICR|=(0<<INT1) | (0<<INT0);
+MCUCR=(0<<ISC11) | (0<<ISC10) | (0<<ISC01) | (0<<ISC00);
+GIFR=(0<<INTF1) | (0<<INTF0);
+}
+
+void portConfig(){
+DDRB=(0<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
+PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
+DDRC=(0<<DDC6) | (0<<DDC5) | (0<<DDC4) | (1<<DDC3) | (1<<DDC2) | (1<<DDC1) | (1<<DDC0);
+PORTC=(0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<PORTC2) | (0<<PORTC1) | (0<<PORTC0);
+DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (1<<DDD1) | (0<<DDD0);
+PORTD=(0<<PORTD7) | (0<<PORTD6) | (0<<PORTD5) | (0<<PORTD4) | (1<<PORTD3) | (1<<PORTD2) | (0<<PORTD1) | (1<<PORTD0);
+}

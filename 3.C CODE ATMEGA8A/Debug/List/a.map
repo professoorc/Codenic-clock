@@ -1,0 +1,85 @@
+RAM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+n                                                                                 0x0160       4
+runnigState                                                                       0x0164       1
+menuPosition                                                                      0x0165       1
+click                                                                             0x0166       1
+stopClockState                                                                    0x0167       1
+seqNumber                                                                         0x0168       1
+counterBlinkNumber                                                                0x0169       1
+blinkNumberChageState                                                             0x016A       1
+portEnable                                                                        0x016B       5
+brightnessSet                                                                     0x0170       1
+
+EEPROM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+alMinute                                                                          0x0000       1
+alHour                                                                            0x0001       1
+brightnessMem                                                                     0x0002       1
+alarmSet                                                                          0x0003       1
+
+Register Allocation
+Variable                                                                          Register  Size
+------------------------------------------------------------------------------------------------
+brightnessPercent                                                                 R5           1
+positionNumber                                                                    R4           1
+i                                                                                 R7           1
+h                                                                                 R6           1
+m                                                                                 R9           1
+s                                                                                 R8           1
+left                                                                              R11          1
+right                                                                             R10          1
+clock                                                                             R13          1
+timeStopClock                                                                     R12          1
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+buzzer                                                                            0x0005F      7
+changePositionNumber                                                              0x00066     21
+digitalWritePortC                                                                 0x0007B     33
+digitalWritePort                                                                  0x0009C    142
+showTwoNumber                                                                     0x0012A     40
+showOneNumber                                                                     0x00152     12
+blinkNumber                                                                       0x0015E     30
+clickCheck                                                                        0x0017C     17
+brightnessCheck                                                                   0x0018D     43
+showBrightness                                                                    0x001B8      5
+stopClock                                                                         0x001BD      8
+checkTimeForClock                                                                 0x001C5     16
+left1                                                                             0x001D9     10
+ext_int0_isr                                                                      0x001E3     11
+ext_int1_isr                                                                      0x001EE     16
+timer1_ovf_isr                                                                    0x001FE      8
+timer2_ovf_isr                                                                    0x00206      3
+timer2_comp_isr                                                                   0x00209     17
+brightness                                                                        0x0021A     29
+blinkNumberChangeTimer                                                            0x00237     40
+blinkEditNumber                                                                   0x0025F     23
+showClock                                                                         0x00276     43
+playAlarm                                                                         0x002A1     18
+exitMenu                                                                          0x002B3      7
+showStringClock                                                                   0x002BA     10
+showStringExit                                                                    0x002C4      8
+showStringBrightness                                                              0x002D4      4
+showStringOne                                                                     0x002D8      7
+showStringOff                                                                     0x002DF     10
+showStringBip                                                                     0x002E9      8
+showStringEvery                                                                   0x002F1     15
+setBrightnessMenu                                                                 0x00300     27
+setTimeMenu                                                                       0x0031B     49
+setAlarmMenu                                                                      0x0034C    103
+setMuteMenu                                                                       0x003B3      1
+showMenu                                                                          0x003B4     77
+main                                                                              0x00401     42
+startTimers                                                                       0x0042B     11
+stopCounterTimer                                                                  0x0043E     13
+startIntrupts                                                                     0x0044B      8
+portConfig                                                                        0x00453     13
+rtc_init                                                                          0x00460     21
+rtc_get_time                                                                      0x00475     27
+rtc_set_time                                                                      0x00490     19
+bcd2bin                                                                           0x004A3     13
+bin2bcd                                                                           0x004B0     10
