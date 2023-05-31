@@ -6,7 +6,7 @@
 ▫️ https://www.instagram.com/codenic.ir  
 ▫️ https://www.youtube.com/@codenic_ir
 
-Make this watch in any color you like
+* Make this watch in any color you like
 
 
 
