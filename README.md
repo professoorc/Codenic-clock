@@ -6,6 +6,30 @@
 ▫️ https://www.instagram.com/codenic.ir  
 ▫️ https://www.youtube.com/@codenic_ir
 
+Make this watch in any color you like
+
+
+
+![Photo (1)](https://github.com/professoorc/Codenic-clock/assets/45636519/cb94f20f-b557-410b-a176-1d3a86f92e67)
+
+![Photo (2)](https://github.com/professoorc/Codenic-clock/assets/45636519/a1ca84bf-1331-4a08-bfb9-ee0278cc7aee)
+
+![Photo (3)](https://github.com/professoorc/Codenic-clock/assets/45636519/3385c5f2-26d0-4490-85b0-17c15fd534b6)
+
+![Photo (4)](https://github.com/professoorc/Codenic-clock/assets/45636519/f0eefb15-8897-498c-9355-37cf3ca32eae)
+
+![photo(5)](https://github.com/professoorc/Codenic-clock/assets/45636519/67882eef-b7b1-4b51-b457-646d7d05e59f)
+
+![photo(6)](https://github.com/professoorc/Codenic-clock/assets/45636519/162c8e0c-fea1-4bd8-a520-e7fa41a620fb)
+
+![photo(7)](https://github.com/professoorc/Codenic-clock/assets/45636519/abbc600a-57ac-4fe0-a915-23ff9e793e89)
+
+![photo(8)](https://github.com/professoorc/Codenic-clock/assets/45636519/5f5e913e-8f07-4fc0-9473-464d42ffd015)
+
+![photo(9)](https://github.com/professoorc/Codenic-clock/assets/45636519/7a3c258a-c498-45a3-b6c4-3453d51a2a6b)
+
+
+
 * component list "main board"
 
 ▫️ Y1 :➡️ cistal 32.768 MHZ
@@ -65,5 +89,12 @@
 ▫️ LED 3mm 86x 
 
 ▫️ rotary encoder
+
+
+
+
+
+
+
 
 
