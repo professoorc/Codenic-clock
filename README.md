@@ -8,6 +8,9 @@
 
 * Make this watch in any color you like
 
+* Related video in Persian language :
+
+https://www.youtube.com/watch?v=WDf5W8EV6MY&t=428s
 
 
 ![Photo (1)](https://github.com/professoorc/Codenic-clock/assets/45636519/cb94f20f-b557-410b-a176-1d3a86f92e67)
