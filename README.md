@@ -95,7 +95,8 @@ https://www.youtube.com/watch?v=WDf5W8EV6MY&t=428s
 
 
 
-
+Fuse Bit Programming
+![image](https://github.com/professoorc/Codenic-clock/assets/45636519/688479ea-716c-4197-961f-f4232e76daaa)
 
 
 
