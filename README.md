@@ -2,10 +2,10 @@
 
 # Designed by professor codenic
 
-▫️ http://www.github.com/professoorc   
-▫️ https://www.instagram.com/codenic.ir  
-▫️ https://www.youtube.com/@codenic.
+▫️ http://www.github.com/professoorc    
 ▫️ https://www.youtube.com/@professoor
+
+
 
 * Make this watch in any color you like
 
