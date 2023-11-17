@@ -1,6 +1,6 @@
 # Clock 7Segment LED
 
-# designed by professor codenic
+# Designed by professor codenic
 
 ▫️ http://www.github.com/professoorc   
 ▫️ https://www.instagram.com/codenic.ir  
